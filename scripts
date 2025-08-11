@@ -1,1 +1,40 @@
+import requests
+from bs4 import BeautifulSoup
+import json
+import os
+
+BASE_URL = "https://www.indiacode.nic.in/handle/123456789/2263"  # Example: IPC
+DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data")
+
+def scrape_act(url, act_name):
+    os.makedirs(DATA_DIR, exist_ok=True)
+
+    response = requests.get(url)
+    if response.status_code != 200:
+        print(f"Failed to fetch: {url}")
+        return
+
+    soup = BeautifulSoup(response.text, "html.parser")
+    sections = soup.find_all("div", class_="act-section")
+
+    act_data = []
+    for sec in sections:
+        sec_no = sec.find("span", class_="section-num")
+        sec_title = sec.find("h4", class_="section-title")
+        sec_text = sec.find("div", class_="section-text")
+
+        act_data.append({
+            "section_number": sec_no.get_text(strip=True) if sec_no else None,
+            "section_title": sec_title.get_text(strip=True) if sec_title else None,
+            "section_text": sec_text.get_text(strip=True) if sec_text else None
+        })
+
+    file_path = os.path.join(DATA_DIR, f"{act_name}.json")
+    with open(file_path, "w", encoding="utf-8") as f:
+        json.dump(act_data, f, indent=2, ensure_ascii=False)
+
+    print(f"Saved {len(act_data)} sections to {file_path}")
+
+if __name__ == "__main__":
+    scrape_act(BASE_URL, "Indian_Penal_Code")
 
