@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import json
 import os
 
-BASE_URL = "https://www.indiacode.nic.in/handle/123456789/2263"  # Example: IPC
+BASE_URL = "https://www.indiacode.nic.in/handle/123456789/2263"  
 DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data")
 
 def scrape_act(url, act_name):
